@@ -1,0 +1,6 @@
+[Unit]
+Description=Proton Drive backup, a sync run
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/protonbackup --run-once

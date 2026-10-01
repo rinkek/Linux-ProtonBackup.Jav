@@ -1,0 +1,258 @@
+/*
+ * Look of the app: Proton purple, a dark sidebar and a light content area (see docs/ui-reference).
+ *
+ * Readability is a requirement, so:
+ *  - one base font size (17px) is set on .root and nothing below 16px is used anywhere;
+ *  - every text colour is set explicitly (no inherited default that could turn white on white);
+ *  - every colour pair is listed in ContrastTest, which fails the build when one drops below 4.5:1.
+ * Change a colour here and that test tells you whether it is still readable.
+ */
+
+.root {
+    /* palette */
+    -pb-accent: #6D4BFF;
+    -pb-accent-hover: #5A3BEA;
+    -pb-accent-disabled: #D6CFFF;
+    -pb-on-accent: #FFFFFF;
+    -pb-on-accent-disabled: #4A3E82;
+
+    -pb-surface: #FFFFFF;
+    -pb-page: #F4F1FF;
+    -pb-card: #FFFFFF;
+    -pb-input-border: #8E8BA6;
+    -pb-card-border: #DEDBEE;
+    -pb-text: #1C1A24;
+    -pb-text-muted: #55526B;
+
+    -pb-plain: #E4E2EE;
+    -pb-plain-hover: #D8D5E8;
+    -pb-plain-disabled: #F1F0F6;
+    -pb-on-plain: #1C1A24;
+    -pb-on-plain-disabled: #8A879C;
+
+    -pb-sidebar: #211A42;
+    -pb-sidebar-hover: #2A2153;
+    -pb-sidebar-selected: #3B2E78;
+    -pb-sidebar-selected-border: #5B4CA0;
+    -pb-sidebar-text: #FFFFFF;
+    -pb-sidebar-text-soft: #E3DFF5;
+    -pb-sidebar-muted: #C9C3E8;
+
+    -pb-success: #1B6B35;
+    -pb-danger: #B3261E;
+    -pb-icon: #3A3750;
+    -pb-row-hover: #EFEDF9;
+    -pb-row-selected: #E0DAFF;
+
+    -pb-info: #EEF0FF;
+    -pb-info-border: #C7CCF5;
+    -pb-on-info: #1C1A24;
+    -pb-warning: #FFF4D6;
+    -pb-warning-border: #E8C766;
+    -pb-on-warning: #4A3A00;
+
+    -fx-font-size: 17px;
+    -fx-background-color: -pb-surface;
+    -fx-text-fill: -pb-text;
+    -fx-accent: -pb-accent;
+    -fx-focus-color: -pb-accent;
+    -fx-faint-focus-color: transparent;
+}
+
+.content, .page-background { -fx-background-color: -pb-page; }
+.label { -fx-text-fill: -pb-text; }
+.muted { -fx-text-fill: -pb-text-muted; }
+
+.page-title { -fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: -pb-text; }
+.section-title { -fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: -pb-text; }
+.stat-value { -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: -pb-text; }
+
+.card {
+    -fx-background-color: -pb-card;
+    -fx-background-radius: 16;
+    -fx-border-color: -pb-card-border;
+    -fx-border-radius: 16;
+    -fx-padding: 22;
+}
+
+.scroll-pane, .scroll-pane > .viewport { -fx-background-color: transparent; }
+.scroll-pane { -fx-padding: 0; }
+
+/* ---- buttons: purple accent by default, grey ("plain") on the Settings page ---- */
+
+.button {
+    -fx-min-height: 44px;
+    -fx-padding: 8 22 8 22;
+    -fx-background-radius: 8;
+    -fx-background-insets: 0;
+    -fx-cursor: hand;
+    -fx-background-color: -pb-accent;
+    -fx-text-fill: -pb-on-accent;
+    -fx-font-weight: normal;
+}
+.button:hover { -fx-background-color: -pb-accent-hover; }
+.button:disabled {
+    -fx-opacity: 1;
+    -fx-cursor: default;
+    -fx-background-color: -pb-accent-disabled;
+    -fx-text-fill: -pb-on-accent-disabled;
+}
+.button:focused { -fx-border-color: -pb-text; -fx-border-radius: 8; -fx-border-width: 2; -fx-border-insets: -1; }
+
+.button.plain {
+    -fx-background-color: -pb-plain;
+    -fx-text-fill: -pb-on-plain;
+    -fx-font-weight: normal;
+}
+.button.plain:hover { -fx-background-color: -pb-plain-hover; }
+.button.plain:disabled { -fx-background-color: -pb-plain-disabled; -fx-text-fill: -pb-on-plain-disabled; }
+
+/* ---- check boxes, text fields ---- */
+
+.check-box { -fx-text-fill: -pb-text; -fx-label-padding: 0 0 0 8; }
+.check-box > .box { -fx-background-color: -pb-surface; -fx-border-color: -pb-input-border; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 4; }
+.check-box:selected > .box { -fx-background-color: -pb-accent; -fx-border-color: -pb-accent; }
+.check-box:selected > .box > .mark { -fx-background-color: -pb-on-accent; }
+.check-box:disabled { -fx-opacity: 1; -fx-text-fill: -pb-text-muted; }
+
+.text-field {
+    -fx-text-fill: -pb-text;
+    -fx-prompt-text-fill: -pb-text-muted;
+    -fx-background-color: -pb-surface;
+    -fx-border-color: -pb-input-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-min-height: 44px;
+    -fx-padding: 0 12 0 12;
+}
+.text-field:focused, .combo-box:focused, .spinner:focused {
+    -fx-border-color: -pb-accent;
+    -fx-effect: dropshadow(gaussian, rgba(109, 75, 255, 0.35), 8, 0.5, 0, 0);
+}
+
+/* the "Advanced" expander: a clearly visible control, not light text on a light card */
+.titled-pane > .title { -fx-background-color: -pb-plain; -fx-background-radius: 8; }
+.titled-pane > .title > .text { -fx-fill: -pb-on-plain; -fx-font-weight: bold; }
+.titled-pane > .title > .arrow-button > .arrow { -fx-background-color: -pb-on-plain; }
+.titled-pane > .content { -fx-background-color: transparent; -fx-border-color: transparent; }
+
+.tooltip { -fx-font-size: 16px; -fx-text-fill: -pb-sidebar-text; -fx-background-color: -pb-sidebar; }
+
+/* ---- info bars ---- */
+
+.info-bar { -fx-padding: 14 16 14 16; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-width: 1; -fx-spacing: 12; -fx-alignment: center-left; }
+.info-bar-info { -fx-background-color: -pb-info; -fx-border-color: -pb-info-border; }
+.info-bar-warning { -fx-background-color: -pb-warning; -fx-border-color: -pb-warning-border; }
+.info-bar-info .label { -fx-text-fill: -pb-on-info; }
+.info-bar-warning .label { -fx-text-fill: -pb-on-warning; }
+.info-bar .info-bar-title { -fx-font-weight: bold; }
+.info-bar .info-bar-close { -fx-min-height: 36px; -fx-min-width: 40px; -fx-padding: 0; -fx-background-color: transparent; -fx-font-size: 23px; -fx-font-weight: bold; }
+.info-bar-info .info-bar-close { -fx-text-fill: -pb-on-info; }
+.info-bar-warning .info-bar-close { -fx-text-fill: -pb-on-warning; }
+.info-bar .info-bar-close:hover { -fx-background-color: rgba(0, 0, 0, 0.10); }
+
+/* ---- the sidebar ---- */
+
+.sidebar { -fx-background-color: -pb-sidebar; -fx-padding: 24 12 16 12; }
+.sidebar .label { -fx-text-fill: -pb-sidebar-text; }
+.sidebar-title { -fx-font-size: 21px; -fx-font-weight: bold; -fx-text-fill: -pb-sidebar-text; }
+.sidebar .sidebar-subtitle { -fx-font-size: 16px; -fx-text-fill: -pb-sidebar-muted; }
+.sidebar .sidebar-session { -fx-font-size: 16px; -fx-text-fill: -pb-sidebar-text-soft; }
+.sidebar .sidebar-lastrun { -fx-font-size: 16px; -fx-text-fill: -pb-sidebar-muted; }
+
+.sidebar .nav-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: -pb-sidebar-text-soft;
+    -fx-font-weight: normal;
+    -fx-alignment: center-left;
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+}
+.sidebar .nav-item:hover { -fx-background-color: -pb-sidebar-hover; -fx-text-fill: -pb-sidebar-text; }
+.sidebar .nav-item:selected {
+    -fx-background-color: -pb-sidebar-selected;
+    -fx-border-color: -pb-sidebar-selected-border;
+    -fx-text-fill: -pb-sidebar-text;
+    -fx-font-weight: bold;
+}
+.sidebar .nav-item:focused { -fx-border-color: -pb-sidebar-text; }
+
+.sidebar .nav-icon {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: 40px;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+}
+.sidebar .nav-icon:hover { -fx-background-color: -pb-sidebar-hover; }
+.sidebar .nav-icon:selected { -fx-background-color: -pb-sidebar-selected; -fx-border-color: -pb-sidebar-selected-border; }
+.sidebar .nav-icon:focused { -fx-border-color: -pb-sidebar-text; }
+.sidebar .nav-icon .nav-icon-shape { -fx-fill: -pb-sidebar-text-soft; }
+.sidebar .nav-icon:hover .nav-icon-shape, .sidebar .nav-icon:selected .nav-icon-shape { -fx-fill: -pb-sidebar-text; }
+
+/* ---- icon buttons (the row actions of "Source folders", the save icon) ---- */
+
+.button.icon-button {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: 40px;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+}
+.button.icon-button:hover { -fx-background-color: -pb-plain; }
+.button.icon-button:disabled { -fx-background-color: transparent; }
+.button.icon-button .icon-shape { -fx-fill: -pb-icon; }
+.button.icon-button:disabled .icon-shape { -fx-fill: -pb-on-plain-disabled; }
+.button.icon-button.danger:hover .icon-shape { -fx-fill: -pb-danger; }
+
+/* ---- cards that hold one source folder, and the wizard's steps ---- */
+
+.card.row-card { -fx-padding: 14 16 14 16; }
+.row-title { -fx-font-weight: bold; }
+.success { -fx-text-fill: -pb-success; -fx-font-weight: bold; }
+.field-caption { -fx-font-size: 16px; -fx-text-fill: -pb-text-muted; }
+
+.footer-bar { -fx-border-color: -pb-card-border transparent transparent transparent; -fx-border-width: 1 0 0 0; -fx-padding: 12 0 0 0; }
+
+/* ---- lists and the tree ---- */
+
+.list-view, .tree-view {
+    -fx-background-color: -pb-surface;
+    -fx-border-color: -pb-card-border;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 4;
+}
+.list-cell, .tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -pb-text;
+    -fx-padding: 5 8 5 8;
+}
+.list-cell:filled:hover, .tree-cell:filled:hover { -fx-background-color: -pb-row-hover; }
+.list-cell:filled:selected, .tree-cell:filled:selected { -fx-background-color: -pb-row-selected; -fx-text-fill: -pb-text; }
+.list-cell:filled:selected .label, .tree-cell:filled:selected .label { -fx-text-fill: -pb-text; }
+.tree-cell .tree-disclosure-node > .arrow { -fx-background-color: -pb-icon; }
+.list-view:focused, .tree-view:focused { -fx-border-color: -pb-accent; }
+
+/* ---- combo box and spinner ---- */
+
+.combo-box, .spinner {
+    -fx-background-color: -pb-surface;
+    -fx-border-color: -pb-input-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-min-height: 44px;
+}
+.combo-box .list-cell { -fx-text-fill: -pb-text; -fx-background-color: transparent; }
+.combo-box .arrow-button, .spinner .increment-arrow-button, .spinner .decrement-arrow-button { -fx-background-color: -pb-plain; -fx-background-radius: 0; }
+.combo-box .arrow-button .arrow, .spinner .increment-arrow-button .increment-arrow, .spinner .decrement-arrow-button .decrement-arrow { -fx-background-color: -pb-on-plain; }
+.combo-box-popup > .list-view { -fx-background-color: -pb-surface; -fx-border-color: -pb-input-border; }
+.spinner .text-field { -fx-border-color: transparent; -fx-background-color: transparent; }
+.text-field:readonly { -fx-background-color: -pb-card; }

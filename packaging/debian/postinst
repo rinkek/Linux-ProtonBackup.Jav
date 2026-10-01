@@ -1,0 +1,19 @@
+#!/bin/sh
+# postinst of protonbackup. Plain POSIX sh; every step is guarded, so a missing tool or a machine
+# without a user session can never make an installation fail.
+
+# @COMMON@
+
+case "$1" in
+    configure)
+        refresh_desktop_caches
+        # An upgrade stopped the timer in prerm; bring it back for whoever has it enabled.
+        start_enabled_timers
+        ;;
+    abort-upgrade | abort-remove | abort-deconfigure)
+        # The upgrade or removal that stopped the timer did not happen: undo the stop.
+        start_enabled_timers
+        ;;
+esac
+
+exit 0

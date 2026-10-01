@@ -1,0 +1,12 @@
+[Unit]
+Description=Proton Drive backup on an interval
+
+[Timer]
+# OnActiveSec, not OnStartupSec: the latter has already elapsed by the time the timer
+# is enabled later in the day, and systemd does not catch up an elapsed monotonic timer.
+OnActiveSec=2min
+OnUnitActiveSec=30min
+Unit=protonbackup-sync.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,29 @@
+# A distribution with a real systemd (as PID 1) and a real systemd *user* manager, for the removal
+# and upgrade tests of the package (lifecycle.sh). It is only started with the capabilities that
+# systemd needs inside a container, never --privileged, so /proc/sys stays read-only and nothing
+# the container does can reach the host's kernel settings.
+#
+#   docker build --build-arg BASE=ubuntu:24.04 -t protonbackup-lifecycle:ubuntu_24.04 - < Dockerfile.systemd
+ARG BASE=ubuntu:24.04
+FROM ${BASE}
+ENV DEBIAN_FRONTEND=noninteractive
+# Debian 11 is end-of-life. Its image names, as comments in sources.list, the snapshot of its last day
+# as the place for its packages; the live repositories no longer serve them, and the packages of the
+# image (security updates included) only match those of that snapshot.
+RUN . /etc/os-release \
+ && if [ "$ID" = debian ] && [ "${VERSION_ID:-}" = 11 ]; then \
+      sed -i -e '/^deb /d' -e 's/^# \(deb http:\/\/snapshot\)/\1/' /etc/apt/sources.list; \
+      echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive; \
+    fi \
+ && apt-get update -qq \
+ && apt-get install -y -qq --no-install-recommends systemd systemd-sysv dbus dbus-user-session libpam-systemd \
+      util-linux procps ca-certificates xvfb xauth \
+ && rm -rf /var/lib/apt/lists/*
+# Units that would try to change the kernel's or the devices' state are not wanted in a container.
+RUN systemctl mask systemd-sysctl.service systemd-udevd.service systemd-udev-trigger.service \
+      systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-remount-fs.service \
+      systemd-modules-load.service systemd-tmpfiles-setup-dev.service systemd-tmpfiles-setup-dev-early.service \
+      sys-kernel-config.mount sys-kernel-debug.mount sys-kernel-tracing.mount dev-hugepages.mount \
+      getty.target console-getty.service 2>/dev/null; \
+    useradd -m -s /bin/bash -u 1001 tester
+STOPSIGNAL SIGRTMIN+3

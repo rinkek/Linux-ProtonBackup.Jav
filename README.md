@@ -1,46 +1,80 @@
-# ProtonBackup Java version
+# ProtonBackup (Java)
 
-One-way, automatic backup of local folders to [Proton Drive](https://proton.me/drive) on Linux.
+One-way, automatic backup of local folders to [Proton Drive](https://proton.me/drive) on Linux. This is the Java 21 + JavaFX port of the
+.NET original; it behaves the same (see `DIFFERENCES.md` and `docs/BEHAVIOR_COMPARISON.md`).
 
-Point it at one or more folders, sign in once, and it keeps them mirrored to Proton Drive in the background — new and changed files are uploaded, nothing already on Proton Drive is ever touched or deleted by a sync.
+Point it at one or more folders, sign in once, and it keeps them mirrored to Proton Drive in the background. New and changed files are
+uploaded; **nothing already on Proton Drive is ever deleted or replaced by a sync.**
 
 ## Features
 
-- **First-run wizard** — download the CLI, sign in, pick a folder, turn on the timer. Four steps and it's running.
-- **Runs unattended** — a lightweight background daemon does the actual syncing on a systemd timer, so it keeps working even when the app itself is closed.
-- **Multiple source folders**, each with its own destination path on Proton Drive.
-- **Live status** — last run, next run, synced/pending/failed counts, sign-in state.
-- **Run history and failure log**, with the reason behind each failed file.
-- **Manual control** — sync now, force a full resync, or remove a source folder at any time.
-- **Self-updating CLI** — checks for newer versions of Proton's own `proton-drive` CLI and can roll back if an update misbehaves.
+- **First-run wizard**: download the CLI, sign in, pick a folder, turn on the timer.
+- **Runs unattended**: a small daemon does the syncing from a systemd user timer, also when the window is closed.
+- **Several source folders**, each with its own destination on Proton Drive.
+- **Status** (last run, next run, synced/queued/failed counts, sign-in state), a **file tree** with an errors-only filter, **run history** with the reason for every failed file, and a tray icon.
+- **Manual control**: sync now, force a full resync, cancel, remove a source.
+- **Self-updating CLI**: checks daily for a newer Proton `proton-drive` CLI, with roll back.
 
 ## How it works
 
-The app never uploads anything itself — it only shows status and drives the daemon via systemd. All actual scanning and uploading happens in the daemon, which shells out to Proton's official `proton-drive` CLI (downloaded on first use and checksum-verified, not bundled). A local SQLite database is the only thing shared between the two.
+The window shows status and drives the daemon through systemd. Scanning and uploading happen in the daemon, which runs Proton's official
+`proton-drive` CLI (downloaded on first use, SHA-512 verified, not part of the package). A local SQLite database is the only thing the two share.
+After every batch the daemon checks the remote folder listing, because the CLI can exit 0 without having uploaded a file.
 
 ## Installing
 
-Prebuilt as a `.deb` for Debian/Ubuntu-based distributions:
+A `.deb` for Debian, Ubuntu and derivatives (tested on Ubuntu 18.04 to 26.04 and Debian 11 to 13; the unpacked package also runs on Rocky 8 and 9 and Fedora).
+It contains its own Java runtime: no Java needs to be installed.
 
-```sh
-sudo apt install ./protonbackup_0.4.5_amd64.deb
+```bash
+sudo apt install ./packaging/protonbackup_0.4.5_amd64.deb
 ```
 
-Everything needed is bundled — no separate runtime to install first.
+Only one implementation (.NET, Python or Java) is installed at a time: remove the other one completely, including its data, first.
 
 ## Getting started
 
-1. Launch **Proton Drive backup** from your application menu.
-2. Follow the welcome screen: it fetches and verifies the CLI, signs you in through your browser, and lets you pick a folder to back up.
-3. Turn on the timer, or leave it off and use **Sync now** whenever you like.
+1. Start **Proton Drive backup** from the application menu (or `protonbackup-ui`).
+2. The welcome screen downloads and verifies the CLI, signs you in through your browser and lets you pick a folder.
+3. Turn on the timer, or use **Sync now**.
 
-## Uninstalling
+## Removing
 
-Settings → Removal cleans up the local database, settings and downloaded CLI first (your files on Proton Drive are never touched), then:
+First let the app clean up its own files in your home folder (a package may not delete them); your files on Proton Drive are never touched:
 
-```sh
+```bash
+protonbackup --cleanup
+```
+
+(or Settings, Removal in the window), then:
+
+```bash
 sudo apt remove protonbackup
 ```
+
+If the package was removed first, it prints these commands for removing what is left by hand (run as yourself):
+
+```bash
+systemctl --user disable --now protonbackup-sync.timer
+rm -rf ~/.local/share/ProtonBackup ~/.config/ProtonBackup ~/.cache/ProtonBackup
+rm -f ~/.config/systemd/user/protonbackup-sync.service ~/.config/systemd/user/protonbackup-sync@.service ~/.config/systemd/user/protonbackup-sync.timer
+rm -rf ~/.config/systemd/user/protonbackup-sync.timer.d
+rm -f ~/.config/systemd/user/timers.target.wants/protonbackup-sync.timer ~/.local/share/systemd/timers/stamp-protonbackup-sync.timer
+rm -rf ~/.openjfx
+systemctl --user daemon-reload
+```
+
+## Building and testing
+
+```bash
+mvn verify                      # all tests (the window tests need a display)
+packaging/build-deb.sh          # the .deb, built in a Temurin container; needs only Docker
+packaging/release-gate.sh       # everything, including the 11-distribution and removal tests (about 40 minutes)
+```
+
+Layout: `protonbackup-core` (library), `protonbackup-daemon` (console app), `protonbackup-ui` (JavaFX), `packaging/`.
+Documentation: `MIGRATION_PLAN.md` (the plan and its status), `ARCHITECTURE.md`, `docs/UI_ARCHITECTURE.md`, `docs/PACKAGING.md`,
+`docs/BEHAVIOR_COMPARISON.md`, `docs/SPIKES.md`, `DIFFERENCES.md`.
 
 ---
 

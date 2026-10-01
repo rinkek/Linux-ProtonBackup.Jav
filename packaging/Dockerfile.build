@@ -1,0 +1,16 @@
+# The image the release .deb is built in.
+#
+# Why a container at all: the JDK's own native binaries (the launcher, libjvm) set the glibc floor
+# of the whole package. The Ubuntu apt JDK needs glibc 2.38; Eclipse Temurin needs 2.15 (measured in
+# docs/SPIKES.md, spike 4a). So the release is built with Temurin, whatever the host has installed.
+#
+# Added on top of the Maven + Temurin image: zip/unzip (the JavaFX and SQLite native libraries are
+# taken out of their jars) and binutils (objdump for the glibc check, objcopy for jpackage).
+#
+# Built with no build context, so nothing from the project folder is sent to Docker:
+#   docker build -t protonbackup-build:temurin21 - < packaging/Dockerfile.build
+FROM maven:3.9-eclipse-temurin-21
+
+RUN apt-get update -qq \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends binutils unzip zip \
+ && rm -rf /var/lib/apt/lists/*

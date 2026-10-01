@@ -1,0 +1,24 @@
+#!/bin/sh
+# prerm of protonbackup. Plain POSIX sh; it must never make a removal or an upgrade fail.
+#
+# What it has to achieve (see MIGRATION_PLAN.md, section 6.8): nothing of the package may be running
+# when its files change, and nothing may be left that points at files that are about to go.
+
+# @COMMON@
+
+case "$1" in
+    remove)
+        # Gone for good: stop the timer and any run, and turn the timer off (that removes the
+        # enable link in the user's home), for everyone who is logged in.
+        stop_user_units disable
+        stop_app_processes
+        print_manual_cleanup
+        ;;
+    upgrade | deconfigure)
+        # Only stopped; postinst starts the timer again for whoever has it enabled.
+        stop_user_units
+        stop_app_processes
+        ;;
+esac
+
+exit 0

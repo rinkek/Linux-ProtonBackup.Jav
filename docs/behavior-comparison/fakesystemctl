@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "$@" >> "$FAKE_SYSTEMCTL_LOG"
+case "$*" in *is-enabled*) echo enabled;; *is-active*) echo active;; esac
+exit 0

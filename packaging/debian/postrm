@@ -1,0 +1,32 @@
+#!/bin/sh
+# postrm of protonbackup. Plain POSIX sh; it must never make a removal fail.
+
+# @COMMON@
+
+case "$1" in
+    remove | purge | disappear)
+        reload_user_managers
+        refresh_desktop_caches
+        ;;
+esac
+
+case "$1" in
+    remove | purge)
+        # dpkg removes the directory by itself when it is empty. Nothing may write below it at run
+        # time, so anything left here is a bug worth seeing; on purge it is removed.
+        if [ -d "$APP_DIR" ] && ! rmdir "$APP_DIR" 2>/dev/null; then
+            if [ "$1" = purge ]; then
+                rm -rf "$APP_DIR"
+            else
+                say "files that are not part of the package were left in $APP_DIR:"
+                find "$APP_DIR" 2>/dev/null | head -n 20 >&2
+            fi
+        fi
+        ;;
+esac
+
+if [ "$1" = purge ]; then
+    print_manual_cleanup
+fi
+
+exit 0

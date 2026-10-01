@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: protonbackup
+Upstream-Contact: Rinke Kleijer <rkl_shop@hotmail.com>
+
+Files: *
+Copyright: 2026 Rinke Kleijer
+License: personal-use
+ This package was made for personal use and is not meant for distribution.
+ The Proton Drive CLI is deliberately not part of it; the app downloads it itself.
+ .
+ The package also contains the Eclipse Temurin Java runtime (GPL-2 with the Classpath
+ exception; its notices are under /usr/lib/protonbackup/lib/runtime/legal), OpenJFX (GPL-2 with
+ the Classpath exception), SQLite JDBC (Apache-2.0), Jackson (Apache-2.0) and SLF4J (MIT), each
+ under the licence of its own project. The JavaFX and SQLite native libraries are taken out of
+ their jars and placed in /usr/lib/protonbackup/lib/app/natives; the sources of OpenJFX and of
+ the Java runtime are available from openjdk.org and openjfx.io.

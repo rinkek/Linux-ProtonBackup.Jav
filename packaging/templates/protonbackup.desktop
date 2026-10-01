@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Proton Drive backup
+GenericName=Backup
+Comment=One-way backup of local folders to Proton Drive
+Exec=protonbackup-ui
+Icon=protonbackup
+Terminal=false
+Categories=Utility;Archiving;
+Keywords=backup;proton;drive;sync;
+StartupNotify=true
+StartupWMClass=protonbackup.ui.App

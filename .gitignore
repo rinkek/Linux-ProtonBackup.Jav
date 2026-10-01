@@ -1,0 +1,19 @@
+# Documentation stays out of the repository (README.md is kept).
+/ARCHITECTURE.md
+/BASELINE.md
+/DIFFERENCES.md
+/MIGRATION_PLAN.md
+/docs/*
+# ...except the scripts of the behaviour comparison, which are tooling and not documentation.
+!/docs/behavior-comparison/
+*.docx
+*.doc
+*.odt
+*.pdf
+*.rtf
+
+# Build output and the package
+target/
+*.deb
+packaging/build/
+__pycache__/
